@@ -1,356 +1,355 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sw">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHMSS Election System</title>
+    <title>Smart Tech Global | Wataalam wa Mifumo</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
         
         :root {
-            --neon-cyan: #00f2ff;
-            --deep-obsidian: #05070a;
-            --panel-bg: rgba(16, 20, 25, 0.95);
+            --primary: #2563eb;
+            --accent: #06b6d4;
+            --dark-bg: #030712;
         }
 
         body {
-            font-family: 'JetBrains Mono', monospace;
-            background-color: var(--deep-obsidian);
-            color: #a0aec0;
-            background-image: 
-                linear-gradient(rgba(0, 242, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 242, 255, 0.03) 1px, transparent 1px);
-            background-size: 30px 30px;
-            min-height: 100vh;
-            margin: 0;
-            position: relative;
-            overflow-x: hidden;
+            font-family: 'Plus+Jakarta+Sans', sans-serif;
+            background-color: var(--dark-bg);
+            color: #ffffff;
+            scroll-behavior: smooth;
         }
 
-        /* UPLOADED SCHOOL LOGO WATERMARK */
-        .watermark {
+        /* Modern Data Flow Background */
+        #data-canvas {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-5deg);
-            width: 500px;
-            height: 500px;
-            opacity: 0.08; 
-            pointer-events: none;
+            top: 0;
+            left: 0;
             z-index: -1;
-            /* Using the uploaded school logo file */
-            background-image: url('shmss.jpg');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            filter: brightness(1.5);
+            opacity: 0.4;
         }
 
-        .cyber-border {
-            border: 1px solid rgba(0, 242, 255, 0.2);
-            position: relative;
+        .glass {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .cyber-border::before {
-            content: "";
-            position: absolute;
-            top: -1px; left: -1px;
-            width: 10px; height: 10px;
-            border-top: 2px solid var(--neon-cyan);
-            border-left: 2px solid var(--neon-cyan);
+        .partner-scroll {
+            display: flex;
+            width: 200%;
+            animation: scroll 20s linear infinite;
         }
 
-        .cyber-panel {
-            background: var(--panel-bg);
-            backdrop-filter: blur(10px);
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
         }
 
-        .cyber-input {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(0, 242, 255, 0.3);
-            color: var(--neon-cyan);
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.2);
         }
 
-        .btn-cyber {
-            background: rgba(0, 242, 255, 0.1);
-            border: 1px solid var(--neon-cyan);
-            color: var(--neon-cyan);
-            text-transform: uppercase;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .btn-cyber:hover:not(:disabled) {
-            background: var(--neon-cyan);
-            color: var(--deep-obsidian);
-            box-shadow: 0 0 20px var(--neon-cyan);
-        }
-
-        .warning-box {
-            background: rgba(220, 38, 38, 0.2);
-            border: 1px solid #dc2626;
-            color: #ff4d4d;
-        }
-
-        .admin-trigger {
-            cursor: pointer;
-            user-select: none;
-            display: inline-block;
+        .locked-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 9999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #ef4444;
+            text-align: center;
         }
     </style>
 </head>
-<body class="flex flex-col p-4 md:p-8">
+<body>
 
-    <!-- WATERMARK IMAGE -->
-    <div class="watermark"></div>
+    <canvas id="data-canvas"></canvas>
 
-    <header class="container mx-auto max-w-5xl mb-8 flex justify-between items-end border-b border-cyan-900/50 pb-6">
-        <div>
-            <!-- ADMIN TRIGGER: CLICK "SHMSS" -->
-            <h1 id="admin-lock" onclick="openAdmin()" class="admin-trigger text-4xl font-bold text-white tracking-tighter uppercase hover:text-cyan-400">SHMSS</h1>
-            <p class="text-cyan-500 text-[10px] font-bold tracking-[0.4em] uppercase">Verified Institution</p>
-        </div>
-        <div class="text-xs text-cyan-400 font-mono" id="system-time">LOADING...</div>
-    </header>
-
-    <main class="container mx-auto max-w-5xl">
-        
-        <!-- Login Section -->
-        <div id="login-section" class="cyber-panel cyber-border p-8 md:p-12 max-w-lg mx-auto">
-            <div class="mb-8 text-center">
-                <h2 class="text-xl font-bold text-white uppercase tracking-widest">Voter Login</h2>
-                <p id="range-hint" class="text-[10px] text-gray-500 uppercase mt-1"></p>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div onclick="openAdmin()" class="flex items-center space-x-2 cursor-pointer group">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/50 group-hover:rotate-12 transition">
+                    <i class="fas fa-terminal text-white"></i>
+                </div>
+                <span class="text-2xl font-extrabold tracking-tighter">SMART<span class="text-blue-500">TECH</span></span>
             </div>
-            
-            <div class="space-y-6">
-                <div>
-                    <label class="block text-[10px] font-bold text-cyan-700 uppercase mb-2 tracking-widest text-center">ID Verification</label>
-                    <input type="text" id="voter-id-input" placeholder="SHMSS-2024-001" 
-                           class="cyber-input w-full p-4 font-mono text-center text-lg uppercase tracking-widest outline-none focus:border-cyan-400">
-                    
-                    <div id="auth-error-msg" class="hidden warning-box mt-4 p-4 text-[12px] font-bold text-center uppercase leading-tight">
+            <div class="hidden md:flex space-x-8 text-xs font-bold uppercase tracking-widest">
+                <a href="#vifurushi" class="hover:text-blue-400">Vifurushi</a>
+                <a href="#kazi" class="hover:text-blue-400">Kazi Zetu</a>
+                <a href="#usajili" class="bg-blue-600 px-6 py-2 rounded-full hover:bg-blue-700 transition shadow-lg shadow-blue-500/30">Anza Sasa</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="pt-40 pb-20 px-6 text-center">
+        <h1 class="text-6xl md:text-8xl font-black mb-6 leading-none tracking-tighter">
+            SIMU NA WEB <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-cyan-400">WATAALAM</span> PEKEE
+        </h1>
+        <p class="max-w-2xl mx-auto text-gray-400 text-lg mb-12">
+            Tunajenga mifumo ya kisasa inayobadilisha biashara yako. Kuanzia School Votes mpaka Global E-commerce.
+        </p>
+        
+        <!-- Trusted Partners -->
+        <div class="max-w-4xl mx-auto overflow-hidden mt-20 relative">
+            <p class="text-[10px] uppercase tracking-[0.3em] text-gray-500 mb-6 font-bold">Inaaminiwa na Makampuni ya Kimataifa</p>
+            <div class="partner-scroll items-center gap-12 opacity-50 grayscale hover:grayscale-0 transition">
+                <div class="flex items-center gap-4 text-2xl font-bold text-white"><i class="fab fa-google"></i> Google</div>
+                <div class="flex items-center gap-4 text-2xl font-bold text-white"><i class="fab fa-microsoft"></i> Microsoft</div>
+                <div class="flex items-center gap-4 text-2xl font-bold text-white"><i class="fab fa-amazon"></i> Amazon</div>
+                <div class="flex items-center gap-4 text-2xl font-bold text-white"><i class="fab fa-apple"></i> Apple</div>
+                <div class="flex items-center gap-4 text-2xl font-bold text-white"><i class="fab fa-facebook"></i> Meta</div>
+                <!-- Duplicate for loop -->
+                <div class="flex items-center gap-4 text-2xl font-bold text-white"><i class="fab fa-google"></i> Google</div>
+                <div class="flex items-center gap-4 text-2xl font-bold text-white"><i class="fab fa-microsoft"></i> Microsoft</div>
+                <div class="flex items-center gap-4 text-2xl font-bold text-white"><i class="fab fa-amazon"></i> Amazon</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="vifurushi" class="py-24 px-6 max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold mb-4">Vifurushi vya Huduma</h2>
+            <p class="text-gray-400">Chagua kifurushi kinachofaa mahitaji yako na bajeti yako.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Basic -->
+            <div class="pricing-card glass p-10 rounded-[2.5rem] border border-white/5 transition duration-500">
+                <h3 class="text-xl font-bold mb-4">Basic Start</h3>
+                <div class="text-4xl font-black mb-6">50k <span class="text-sm font-normal text-gray-400">/ Mradi</span></div>
+                <ul class="space-y-4 text-sm text-gray-300 mb-10">
+                    <li><i class="fas fa-check text-blue-500 mr-2"></i> Blogu ya Kawaida</li>
+                    <li><i class="fas fa-check text-blue-500 mr-2"></i> <strong>.xyz / .site Domain</strong></li>
+                    <li><i class="fas fa-check text-blue-500 mr-2"></i> Usalama wa SSL</li>
+                    <li><i class="fas fa-times text-red-500 mr-2"></i> Hakuna App ya Simu</li>
+                </ul>
+                <a href="#usajili" class="block text-center py-4 rounded-2xl bg-white/5 hover:bg-white/10 font-bold transition">Chagua Hii</a>
+            </div>
+            <!-- Pro -->
+            <div class="pricing-card glass p-10 rounded-[2.5rem] border-2 border-blue-600 relative overflow-hidden transition duration-500 scale-105 bg-blue-600/5">
+                <div class="absolute top-5 right-5 bg-blue-600 px-3 py-1 rounded-full text-[10px] font-bold">POPULAR</div>
+                <h3 class="text-xl font-bold mb-4">Business Pro</h3>
+                <div class="text-4xl font-black mb-6">350k <span class="text-sm font-normal text-gray-400">/ Mradi</span></div>
+                <ul class="space-y-4 text-sm text-gray-300 mb-10">
+                    <li><i class="fas fa-check text-blue-500 mr-2"></i> Website ya Biashara</li>
+                    <li><i class="fas fa-check text-blue-500 mr-2"></i> <strong>.co.tz / .com Domain</strong></li>
+                    <li><i class="fas fa-check text-blue-500 mr-2"></i> Web App ya Awali</li>
+                    <li><i class="fas fa-check text-blue-500 mr-2"></i> Usaidizi wa Miezi 3</li>
+                </ul>
+                <a href="#usajili" class="block text-center py-4 rounded-2xl bg-blue-600 hover:bg-blue-700 font-bold shadow-lg shadow-blue-600/30 transition">Chagua Hii</a>
+            </div>
+            <!-- Elite -->
+            <div class="pricing-card glass p-10 rounded-[2.5rem] border border-white/5 transition duration-500">
+                <h3 class="text-xl font-bold mb-4">Global Elite</h3>
+                <div class="text-4xl font-black mb-6">1M+ <span class="text-sm font-normal text-gray-400">/ Mradi</span></div>
+                <ul class="space-y-4 text-sm text-gray-300 mb-10">
+                    <li><i class="fas fa-check text-blue-500 mr-2"></i> Mifumo Tata (School/Hospital)</li>
+                    <li><i class="fas fa-check text-blue-500 mr-2"></i> <strong>Any Domain Premium</strong></li>
+                    <li><i class="fas fa-check text-blue-500 mr-2"></i> iOS & Android App</li>
+                    <li><i class="fas fa-check text-blue-500 mr-2"></i> Usaidizi wa Mwaka Mzima</li>
+                </ul>
+                <a href="#usajili" class="block text-center py-4 rounded-2xl bg-white/5 hover:bg-white/10 font-bold transition">Chagua Hii</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Registration Form -->
+    <section id="usajili" class="py-24 px-6 bg-slate-900/30">
+        <div class="max-w-4xl mx-auto glass p-12 rounded-[3rem] shadow-2xl relative overflow-hidden">
+            <div class="absolute -bottom-20 -left-20 w-60 h-60 bg-blue-600/20 blur-[100px] rounded-full"></div>
+            <h2 class="text-4xl font-bold mb-10 text-center">Anza Mradi Wako Sasa</h2>
+            <form id="regForm" onsubmit="submitForm(event)" class="space-y-6 relative">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-gray-500 uppercase">Jina Lako</label>
+                        <input type="text" id="fname" required class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-gray-500 uppercase">Barua Pepe</label>
+                        <input type="email" id="femail" required class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition">
                     </div>
                 </div>
-                <button onclick="startVoting()" class="btn-cyber w-full py-4 tracking-widest">Verify ID</button>
-            </div>
-        </div>
-
-        <!-- Voting Section -->
-        <div id="voting-section" class="hidden space-y-8">
-            <div class="flex items-center justify-between bg-cyan-950/20 p-4 border-l-4 border-cyan-500">
-                <div class="font-mono text-xs text-cyan-100" id="active-user-display"></div>
-                <div class="text-[10px] text-cyan-400 font-bold uppercase tracking-widest">Encrypted Session</div>
-            </div>
-            
-            <div id="ballot-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
-            
-            <button onclick="submitBallot()" class="btn-cyber w-full py-6 text-xl mt-8 tracking-widest">Finalize Selection</button>
-        </div>
-
-        <!-- Admin Section -->
-        <div id="admin-section" class="hidden space-y-6">
-            <div class="flex justify-between items-center border-b border-cyan-500/30 pb-4">
-                <h2 class="text-2xl font-bold text-white uppercase tracking-tighter">Election Dashboard</h2>
-                <div class="flex gap-2">
-                    <button onclick="clearVotes()" class="btn-cyber px-4 py-2 text-[10px] border-red-600 text-red-500">Reset System</button>
-                    <button onclick="location.reload()" class="btn-cyber px-4 py-2 text-[10px]">Logout</button>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-gray-500 uppercase">Mji (City)</label>
+                        <input type="text" id="fcity" required class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-gray-500 uppercase">Namba ya Simu</label>
+                        <input type="tel" id="fphone" required class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition">
+                    </div>
                 </div>
-            </div>
-            <div id="admin-live-counts" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"></div>
-            <div id="admin-breakdown" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-500 uppercase">Namba ya WhatsApp</label>
+                    <input type="tel" id="fwhatsapp" placeholder="Kwa ajili ya mawasiliano ya haraka" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-500 uppercase">Kifurushi Unachotaka</label>
+                    <select id="fplan" class="w-full bg-[#0a0f1d] border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition">
+                        <option value="50k">Basic (50,000 TZS)</option>
+                        <option value="350k">Pro (350,000 TZS)</option>
+                        <option value="1M">Elite (1,000,000+ TZS)</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full py-5 bg-blue-600 rounded-2xl font-black text-xl hover:bg-blue-700 transition shadow-xl shadow-blue-500/20 active:scale-95">
+                    TUMA KWA WATAALAM
+                </button>
+            </form>
         </div>
-    </main>
+    </section>
+
+    <!-- Admin Logic -->
+    <div id="adminModal" class="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-6 hidden backdrop-blur-3xl">
+        <div class="glass p-8 rounded-[2rem] w-full max-w-md border border-blue-500/30">
+            <h3 class="text-2xl font-bold mb-6 text-center">Smart Tech Security</h3>
+            <div id="loginError" class="bg-red-500/10 text-red-500 p-3 rounded-lg text-xs mb-4 hidden"></div>
+            <div class="space-y-4">
+                <input type="text" id="admUser" placeholder="Username" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500">
+                <input type="password" id="admPass" placeholder="Password" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500">
+                <button onclick="checkAdmin()" class="w-full py-4 bg-blue-600 rounded-xl font-bold">Verify Identity</button>
+                <button onclick="closeAdmin()" class="w-full text-xs text-gray-500">Ghairi</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="adminPanel" class="fixed inset-0 z-[200] bg-slate-950 hidden flex-col">
+        <div class="p-6 border-b border-white/10 flex justify-between items-center bg-slate-900">
+            <h2 class="text-xl font-bold">Admin Panel | Salehe</h2>
+            <button onclick="location.reload()" class="bg-red-500 px-4 py-2 rounded-lg text-sm font-bold">Logout</button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-6" id="userDataArea"></div>
+    </div>
+
+    <div id="lockScreen" class="locked-overlay">
+        <i class="fas fa-user-lock text-7xl mb-6"></i>
+        <h1 class="text-4xl font-black uppercase">Mfumo Umejifunga</h1>
+        <p class="text-gray-400 mt-4 max-w-sm">Umejaribu kuingia isivyo halali mara 3. Wasiliana na Smart Tech kupata ufunguo mwingine.</p>
+    </div>
+
+    <!-- AI Helper -->
+    <div class="fixed bottom-6 right-6 z-40">
+        <div id="aiWindow" class="hidden w-80 glass rounded-3xl mb-4 overflow-hidden border border-blue-500/20 shadow-2xl">
+            <div class="p-4 bg-blue-600 font-bold flex items-center justify-between">
+                <span>Smart AI Expert</span>
+                <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+            </div>
+            <div id="chatDisplay" class="h-60 p-4 overflow-y-auto space-y-3 text-[11px] bg-black/40"></div>
+            <div class="p-3 flex gap-2">
+                <input id="chatInp" type="text" placeholder="Andika..." class="flex-1 bg-white/10 border-none rounded-lg px-3 py-2 text-xs outline-none">
+                <button onclick="sendChat()" class="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center"><i class="fas fa-paper-plane text-xs"></i></button>
+            </div>
+        </div>
+        <button onclick="document.getElementById('aiWindow').classList.toggle('hidden')" class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition active:scale-95">
+            <i class="fas fa-robot text-2xl"></i>
+        </button>
+    </div>
 
     <script>
-        const CONFIG = { 
-            TOTAL_STUDENTS: 500, 
-            YEAR: "2024",
-            ADMIN_KEY: "ayla" 
-        };
-
-        const categories = [
-            { id: 'head', title: 'Head Prefect', candidates: ["FURAHA", "ADHEEN", "LEILA", "ABOUBAKAR"] },
-            { id: 'deputy', title: 'Deputy Prefect', candidates: ["ABRIELLE", "YONA", "RANIA", "TANISH"] },
-            { id: 'secretary', title: 'Secretary Prefect', candidates: ["ARIANNAH", "AHMED", "TWAHIBA", "FAHD"] },
-            { id: 'acad', title: 'Academic Prefect', candidates: ["LINCOLN", "GISHA", "LANTA-LILIAN", "MICHELLE"], dual: true },
-            { id: 'disc', title: 'Discipline Prefect', candidates: ["ABDULKIZA", "ABDULRASUL", "ZAITUNI", "AKLAM"], dual: true },
-            { id: 'sport', title: 'Sports Prefect', candidates: ["THABIT", "PRINCE", "WENDE", "SHAAFA"], dual: true },
-            { id: 'env', title: 'Environmental Prefect', candidates: ["GABRIEL", "YUSUPH", "AMINA", "MOZA"], dual: true },
-            { id: 'anti', title: 'Anti-Bully Prefect', candidates: ["ANMAR", "KHAMIS", "ABIGAIL", "PRECIOUS"], dual: true }
-        ];
-
-        let selections = {};
-        let currentVoterId = "";
-
-        window.onload = () => {
-            document.getElementById('range-hint').innerText = `Valid Range: SHMSS-${CONFIG.YEAR}-001 to ${CONFIG.TOTAL_STUDENTS}`;
-        };
-
-        function showError(msg) {
-            const errorBox = document.getElementById('auth-error-msg');
-            errorBox.innerHTML = msg;
-            errorBox.classList.remove('hidden');
+        // --- 1. Data Flow Particle Visuals ---
+        const canvas = document.getElementById('data-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        class P {
+            constructor() { this.r(); }
+            r() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.s = Math.random() * 2 + 1;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 2;
+            }
+            u() {
+                this.x += this.vx; this.y += this.vy;
+                if(this.x<0 || this.x>canvas.width || this.y<0 || this.y>canvas.height) this.r();
+            }
+            d() {
+                ctx.fillStyle = '#3b82f6';
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.s, 0, Math.PI*2); ctx.fill();
+            }
         }
-
-        function startVoting() {
-            const input = document.getElementById('voter-id-input');
-            const id = input.value.trim().toUpperCase();
-            const errorBox = document.getElementById('auth-error-msg');
-            errorBox.classList.add('hidden');
-            
-            if (id === CONFIG.ADMIN_KEY.toUpperCase()) {
-                openAdmin();
-                return;
-            }
-
-            // REPETITION CHECK (CRITICAL FIX)
-            const alreadyVotedList = JSON.parse(localStorage.getItem('shmss_voted_ids') || '[]');
-            
-            if (alreadyVotedList.includes(id)) {
-                input.value = "";
-                showError("🚨 ACCESS DENIED: ID " + id + " HAS ALREADY BEEN USED.");
-                return;
-            }
-
-            // Format Validation
-            const regex = new RegExp(`^SHMSS-${CONFIG.YEAR}-\\d{3}$`);
-            if (!regex.test(id)) {
-                showError("❌ FORMAT ERROR<br><span class='text-[10px]'>ID MUST BE: SHMSS-2024-###</span>");
-                return;
-            }
-
-            // Range Check
-            const num = parseInt(id.split('-')[2]);
-            if (num < 1 || num > CONFIG.TOTAL_STUDENTS) {
-                showError("❌ UNREGISTERED ID NUMBER");
-                return;
-            }
-
-            currentVoterId = id;
-            document.getElementById('login-section').classList.add('hidden');
-            document.getElementById('voting-section').classList.remove('hidden');
-            document.getElementById('active-user-display').innerText = `SESSION: ${id}`;
-            renderBallot();
-            window.scrollTo(0,0);
+        function init() { for(let i=0; i<100; i++) particles.push(new P()); }
+        function loop() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            particles.forEach(p => { p.u(); p.d(); });
+            requestAnimationFrame(loop);
         }
+        window.addEventListener('resize', resize); resize(); init(); loop();
 
-        function renderBallot() {
-            const container = document.getElementById('ballot-container');
-            container.innerHTML = categories.map(cat => {
-                if (!cat.dual) {
-                    return `
-                        <div class="cyber-panel cyber-border p-6">
-                            <h3 class="text-white text-xs font-bold uppercase mb-4 border-b border-cyan-900 pb-2">${cat.title}</h3>
-                            <select onchange="selections['${cat.id}']=this.value" class="cyber-input w-full p-3 text-xs uppercase outline-none focus:border-white">
-                                <option value="">-- CHOOSE CANDIDATE --</option>
-                                ${cat.candidates.map(c => `<option value="${c}">${c}</option>`).join('')}
-                            </select>
-                        </div>
-                    `;
-                } else {
-                    const half = Math.ceil(cat.candidates.length / 2);
-                    const males = cat.candidates.slice(0, half);
-                    const females = cat.candidates.slice(half);
-                    return `
-                        <div class="cyber-panel cyber-border p-6">
-                            <h3 class="text-white text-xs font-bold uppercase mb-4 border-b border-cyan-900 pb-2">${cat.title}</h3>
-                            <div class="space-y-3">
-                                <select onchange="selections['${cat.id}_m']=this.value" class="cyber-input w-full p-2 text-[10px] uppercase outline-none">
-                                    <option value="">-- MALE CANDIDATE --</option>
-                                    ${males.map(c => `<option value="${c}">${c}</option>`).join('')}
-                                </select>
-                                <select onchange="selections['${cat.id}_f']=this.value" class="cyber-input w-full p-2 text-[10px] uppercase outline-none">
-                                    <option value="">-- FEMALE CANDIDATE --</option>
-                                    ${females.map(c => `<option value="${c}">${c}</option>`).join('')}
-                                </select>
-                            </div>
-                        </div>
-                    `;
+        // --- 2. Security & Admin Panel ---
+        let attempts = parseInt(localStorage.getItem('st_attempts')) || 0;
+        let isLocked = localStorage.getItem('st_locked') === 'true';
+
+        if(isLocked) document.getElementById('lockScreen').style.display = 'flex';
+
+        function openAdmin() { if(!isLocked) document.getElementById('adminModal').classList.remove('hidden'); }
+        function closeAdmin() { document.getElementById('adminModal').classList.add('hidden'); }
+
+        function checkAdmin() {
+            const u = document.getElementById('admUser').value;
+            const p = document.getElementById('admPass').value;
+            const err = document.getElementById('loginError');
+
+            if(u === "Salehe" && p === "5050") {
+                document.getElementById('adminPanel').classList.remove('hidden');
+                document.getElementById('adminModal').classList.add('hidden');
+                attempts = 0; localStorage.setItem('st_attempts', 0);
+                showUsers();
+            } else {
+                attempts++;
+                localStorage.setItem('st_attempts', attempts);
+                err.innerText = `Ingia iliyokataliwa! Majaribio yaliyobaki: ${3 - attempts}`;
+                err.classList.remove('hidden');
+                if(attempts >= 3) {
+                    localStorage.setItem('st_locked', 'true');
+                    document.getElementById('lockScreen').style.display = 'flex';
                 }
-            }).join('');
-        }
-
-        function submitBallot() {
-            const alreadyVotedList = JSON.parse(localStorage.getItem('shmss_voted_ids') || '[]');
-            if (alreadyVotedList.includes(currentVoterId)) {
-                alert("Security breach detected: ID already used.");
-                location.reload();
-                return;
-            }
-
-            const expectedCount = categories.reduce((acc, cat) => acc + (cat.dual ? 2 : 1), 0);
-            if (Object.keys(selections).length < expectedCount) {
-                return alert("ERROR: You must vote for every category.");
-            }
-
-            let votes = JSON.parse(localStorage.getItem('shmss_vote_counts')) || {};
-            Object.values(selections).forEach(name => {
-                votes[name] = (votes[name] || 0) + 1;
-            });
-            localStorage.setItem('shmss_vote_counts', JSON.stringify(votes));
-
-            alreadyVotedList.push(currentVoterId);
-            localStorage.setItem('shmss_voted_ids', JSON.stringify(alreadyVotedList));
-
-            alert("VOTE SUBMITTED. THANK YOU.");
-            location.reload();
-        }
-
-        function openAdmin() {
-            const pass = prompt("ADMIN AUTHORIZATION:");
-            if (pass === CONFIG.ADMIN_KEY) {
-                document.getElementById('login-section').classList.add('hidden');
-                document.getElementById('voting-section').classList.add('hidden');
-                document.getElementById('admin-section').classList.remove('hidden');
-                updateAdminPanel();
-            } else if (pass !== null) {
-                alert("INVALID ACCESS KEY");
             }
         }
 
-        function updateAdminPanel() {
-            const votes = JSON.parse(localStorage.getItem('shmss_vote_counts')) || {};
-            const registry = JSON.parse(localStorage.getItem('shmss_voted_ids') || '[]');
-            const turnout = registry.length;
+        // --- 3. Data Storage & Rendering ---
+        function submitForm(e) {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('fname').value,
+                email: document.getElementById('femail').value,
+                city: document.getElementById('fcity').value,
+                phone: document.getElementById('fphone').value,
+                whatsapp: document.getElementById('fwhatsapp').value,
+                plan: document.getElementById('fplan').value,
+                date: new Date().toLocaleString()
+            };
             
-            document.getElementById('admin-live-counts').innerHTML = `
-                <div class="cyber-panel p-4 border border-cyan-800">
-                    <p class="text-[9px] uppercase font-bold text-cyan-600">Total Votes Cast</p>
-                    <p class="text-2xl font-bold text-white">${turnout}</p>
-                </div>
-                <div class="cyber-panel p-4 border border-cyan-800">
-                    <p class="text-[9px] uppercase font-bold text-cyan-600">Turnout %</p>
-                    <p class="text-2xl font-bold text-white">${((turnout/CONFIG.TOTAL_STUDENTS)*100).toFixed(1)}%</p>
-                </div>
-            `;
+            let users = JSON.parse(localStorage.getItem('st_users')) || [];
+            users.push(data);
+            localStorage.setItem('st_users', JSON.stringify(users));
 
-            document.getElementById('admin-breakdown').innerHTML = categories.map(cat => {
-                const tallies = cat.candidates.map(c => `
-                    <div class="flex justify-between text-[11px] py-1 border-b border-cyan-900/30">
-                        <span>${c}</span><span class="text-cyan-400 font-bold">${votes[c] || 0}</span>
-                    </div>
-                `).join('');
-                return `<div class="cyber-panel cyber-border p-4">
-                    <h4 class="text-white text-[10px] font-bold uppercase mb-2">${cat.title}</h4>
-                    ${tallies}
-                </div>`;
-            }).join('');
+            // Formspree connection
+            const fd = new FormData();
+            Object.keys(data).forEach(k => fd.append(k, data[k]));
+            fetch("https://formspree.io/f/shabaniomary802@gmail.com", { method: 'POST', body: fd, headers: {'Accept': 'application/json'}})
+            .then(() => { alert("Asante " + data.name + "! Wataalam wetu wameshapokea taarifa zako."); e.target.reset(); });
         }
 
-        function clearVotes() {
-            if(confirm("DANGER: WIPE ALL ELECTION DATA?")) {
-                localStorage.removeItem('shmss_vote_counts');
-                localStorage.removeItem('shmss_voted_ids');
-                location.reload();
-            }
-        }
-
-        setInterval(() => {
-            const el = document.getElementById('system-time');
-            if (el) el.innerText = `SYS_SYNC: ${new Date().toLocaleTimeString()}`;
-        }, 1000);
-    </script>
-</body>
-</html>
+        function showUsers() {
+            const area = document.getElementById('userDataArea');
+            const users = JSON.parse(localStorage.getItem('st_users')) || [];
+            area.innerHTML = "<h3 class='text-2xl font-bold mb-8'>Wateja Waliopo</h3>";
+            if(users.length === 0) area.innerHTML += "<p class='text-gray-500'>Bado hakuna wateja.</p>";
+            
+            users.reverse().forEach(u => {
+                area.innerHTML += `
+                    <div class="glass p-6 rounded-3xl mb-4 border-l-4 border-blue-500">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <p class="text-xl font-bold">${u.name}</p>
+                      
