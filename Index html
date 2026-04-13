@@ -1,356 +1,212 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sw" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHMSS Election System</title>
+    <title>Selvix tech- Enterprise Web & App Solutions</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: { navy: '#0B132B', selvix: '#0066FF' }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap');
-        
-        :root {
-            --neon-cyan: #00f2ff;
-            --deep-obsidian: #05070a;
-            --panel-bg: rgba(16, 20, 25, 0.95);
-        }
-
-        body {
-            font-family: 'JetBrains Mono', monospace;
-            background-color: var(--deep-obsidian);
-            color: #a0aec0;
-            background-image: 
-                linear-gradient(rgba(0, 242, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 242, 255, 0.03) 1px, transparent 1px);
-            background-size: 30px 30px;
-            min-height: 100vh;
-            margin: 0;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* UPLOADED SCHOOL LOGO WATERMARK */
-        .watermark {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-5deg);
-            width: 500px;
-            height: 500px;
-            opacity: 0.08; 
-            pointer-events: none;
-            z-index: -1;
-            /* Using the uploaded school logo file */
-            background-image: url('shmss.jpg');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            filter: brightness(1.5);
-        }
-
-        .cyber-border {
-            border: 1px solid rgba(0, 242, 255, 0.2);
-            position: relative;
-        }
-
-        .cyber-border::before {
-            content: "";
-            position: absolute;
-            top: -1px; left: -1px;
-            width: 10px; height: 10px;
-            border-top: 2px solid var(--neon-cyan);
-            border-left: 2px solid var(--neon-cyan);
-        }
-
-        .cyber-panel {
-            background: var(--panel-bg);
-            backdrop-filter: blur(10px);
-        }
-
-        .cyber-input {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(0, 242, 255, 0.3);
-            color: var(--neon-cyan);
-        }
-
-        .btn-cyber {
-            background: rgba(0, 242, 255, 0.1);
-            border: 1px solid var(--neon-cyan);
-            color: var(--neon-cyan);
-            text-transform: uppercase;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .btn-cyber:hover:not(:disabled) {
-            background: var(--neon-cyan);
-            color: var(--deep-obsidian);
-            box-shadow: 0 0 20px var(--neon-cyan);
-        }
-
-        .warning-box {
-            background: rgba(220, 38, 38, 0.2);
-            border: 1px solid #dc2626;
-            color: #ff4d4d;
-        }
-
-        .admin-trigger {
-            cursor: pointer;
-            user-select: none;
-            display: inline-block;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        /* Marquee Animation */
+        .marquee { overflow: hidden; white-space: nowrap; width: 100%; display: flex; position: relative; mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); }
+        .marquee-content { display: flex; animation: scroll 25s linear infinite; }
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        /* FAQ Animation */
+        .faq-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-in-out; }
+        .faq-active .faq-content { max-height: 600px; }
+        .faq-active .fa-chevron-down { transform: rotate(180deg); }
     </style>
 </head>
-<body class="flex flex-col p-4 md:p-8">
+<body class="bg-gray-50 text-gray-900 dark:bg-navy dark:text-white transition-colors duration-300 antialiased overflow-x-hidden">
 
-    <!-- WATERMARK IMAGE -->
-    <div class="watermark"></div>
-
-    <header class="container mx-auto max-w-5xl mb-8 flex justify-between items-end border-b border-cyan-900/50 pb-6">
-        <div>
-            <!-- ADMIN TRIGGER: CLICK "SHMSS" -->
-            <h1 id="admin-lock" onclick="openAdmin()" class="admin-trigger text-4xl font-bold text-white tracking-tighter uppercase hover:text-cyan-400">SHMSS</h1>
-            <p class="text-cyan-500 text-[10px] font-bold tracking-[0.4em] uppercase">Verified Institution</p>
+    <!-- ================= NAVBAR ================= -->
+    <nav class="bg-white/90 dark:bg-navy/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 sticky top-0 z-40 w-full">
+        <div class="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
+            <!-- SECRET ADMIN LOGO TRIGGER (Salehe / 5050) -->
+            <div class="flex items-center gap-3 cursor-pointer group" onclick="openAdminLogin()">
+                <div class="w-10 h-10 bg-gradient-to-tr from-selvix to-cyan-400 rounded-xl flex items-center justify-center font-bold text-white text-xl shadow-lg group-hover:scale-105 transition">S</div>
+                <span class="text-2xl font-extrabold tracking-tight">Selvix</span>
+            </div>
+            
+            <div class="flex items-center gap-5">
+                <button onclick="toggleTheme()" class="text-gray-500 dark:text-gray-400 hover:text-selvix text-2xl transition"><i id="themeIcon" class="fas fa-moon"></i></button>
+                <button onclick="toggleLanguage()" class="flex items-center gap-2 font-bold text-sm text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition"><i class="fas fa-language text-selvix"></i> <span id="langLabel">EN</span></button>
+                <button onclick="toggleMenu()" class="text-3xl text-gray-700 dark:text-gray-300 hover:text-selvix transition"><i class="fas fa-bars"></i></button>
+            </div>
         </div>
-        <div class="text-xs text-cyan-400 font-mono" id="system-time">LOADING...</div>
-    </header>
+    </nav>
 
-    <main class="container mx-auto max-w-5xl">
+    <!-- ================= SIDEBAR MENU ================= -->
+    <div id="sideMenu" class="fixed inset-y-0 left-0 w-full sm:w-80 bg-white dark:bg-gray-900 z-50 transform -translate-x-full transition-transform duration-300 flex flex-col shadow-2xl border-r border-gray-200 dark:border-gray-800">
+        <div class="h-20 flex justify-between items-center px-6 border-b border-gray-200 dark:border-gray-800">
+            <span class="text-2xl font-extrabold tracking-wide text-selvix">Menu</span>
+            <button onclick="toggleMenu()" class="text-gray-500 hover:text-red-500 text-3xl"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="flex-grow overflow-y-auto px-6 py-6">
+            <!-- Currency Box -->
+            <div class="relative mb-8">
+                <p class="text-xs text-gray-500 font-bold mb-2 uppercase" data-i18n="select_region">Currency / Region</p>
+                <button onclick="toggleCurrencyBox()" class="flex items-center justify-between w-full border border-gray-300 dark:border-gray-700 p-3.5 rounded-xl text-sm font-bold hover:border-selvix transition bg-gray-50 dark:bg-gray-800">
+                    <span id="displayCurrencyName" class="text-selvix"><i class="fas fa-globe-africa mr-2"></i>Tanzania TZS</span>
+                    <i class="fas fa-chevron-down text-gray-400"></i>
+                </button>
+                <div id="currencyBox" class="absolute top-20 left-0 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden hidden z-20">
+                    <ul class="max-h-60 overflow-y-auto text-sm" id="currencyList"></ul>
+                </div>
+            </div>
+            <!-- Menu Links -->
+            <ul class="space-y-3 font-bold text-lg text-gray-700 dark:text-gray-300">
+                <li onclick="scrollToSection('about')" class="cursor-pointer p-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl flex justify-between transition"><span data-i18n="nav_about">About Us</span> <i class="fas fa-angle-right text-gray-400"></i></li>
+                <li onclick="scrollToSection('services')" class="cursor-pointer p-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl flex justify-between transition"><span data-i18n="nav_services">Services</span> <i class="fas fa-angle-right text-gray-400"></i></li>
+                <li onclick="scrollToSection('portfolio')" class="cursor-pointer p-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl flex justify-between transition"><span data-i18n="nav_portfolio">Portfolio</span> <i class="fas fa-angle-right text-gray-400"></i></li>
+                <li onclick="scrollToSection('pricing')" class="cursor-pointer p-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl flex justify-between transition"><span data-i18n="nav_pricing">Pricing</span> <i class="fas fa-angle-right text-gray-400"></i></li>
+                <li onclick="scrollToSection('faq')" class="cursor-pointer p-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl flex justify-between transition"><span data-i18n="nav_faq">FAQs</span> <i class="fas fa-angle-right text-gray-400"></i></li>
+            </ul>
+        </div>
+        <div class="p-6 border-t border-gray-200 dark:border-gray-800">
+            <button onclick="openForm()" class="w-full bg-selvix text-white py-4 rounded-xl font-extrabold shadow-lg shadow-blue-500/40 hover:bg-blue-700 transition" data-i18n="btn_start">Start Project</button>
+        </div>
+    </div>
+    <div id="menuOverlay" onclick="toggleMenu()" class="fixed inset-0 bg-black/70 z-40 hidden backdrop-blur-sm transition-opacity"></div>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <div id="mainContent">
         
-        <!-- Login Section -->
-        <div id="login-section" class="cyber-panel cyber-border p-8 md:p-12 max-w-lg mx-auto">
-            <div class="mb-8 text-center">
-                <h2 class="text-xl font-bold text-white uppercase tracking-widest">Voter Login</h2>
-                <p id="range-hint" class="text-[10px] text-gray-500 uppercase mt-1"></p>
+        <!-- HERO SECTION -->
+        <header class="pt-28 pb-20 text-center px-4 relative overflow-hidden">
+            <div class="absolute top-10 left-1/2 -translate-x-1/2 w-full max-w-2xl h-80 bg-blue-500/10 dark:bg-blue-500/20 blur-[120px] rounded-full pointer-events-none"></div>
+            <h4 class="text-selvix font-extrabold text-sm tracking-widest uppercase mb-6" data-i18n="hero_badge">WE ENGINEER DIGITAL ECOSYSTEMS</h4>
+            <h1 class="text-5xl md:text-7xl font-black mb-8 max-w-5xl mx-auto leading-tight text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400" data-i18n="hero_title">
+                Next-Generation Web & Mobile Solutions
+            </h1>
+            <p class="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto mb-12 leading-relaxed" data-i18n="hero_desc">
+                We craft beautiful, high-performance Websites, powerful Flutter Mobile Apps, and highly secure Enterprise Backend ERP Systems that scale with your business.
+            </p>
+            <button onclick="openForm()" class="bg-selvix text-white px-10 py-4 rounded-full font-extrabold text-lg hover:bg-blue-700 transition shadow-xl shadow-blue-500/30 hover:scale-105 transform" data-i18n="btn_start">Request A Quote</button>
+        </header>
+
+        <!-- MARQUEE (PARTNERS) -->
+        <div class="max-w-6xl mx-auto mb-32 opacity-50 dark:opacity-70">
+            <div class="marquee">
+                <div class="marquee-content gap-20 text-6xl text-gray-400 dark:text-gray-500 flex items-center px-10">
+                    <i class="fab fa-aws"></i><i class="fab fa-google"></i><i class="fab fa-react"></i><i class="fab fa-flutter"></i><i class="fab fa-node-js"></i><i class="fab fa-digital-ocean"></i><i class="fab fa-python"></i><i class="fab fa-linux"></i>
+                    <i class="fab fa-aws"></i><i class="fab fa-google"></i><i class="fab fa-react"></i><i class="fab fa-flutter"></i><i class="fab fa-node-js"></i><i class="fab fa-digital-ocean"></i><i class="fab fa-python"></i><i class="fab fa-linux"></i>
+                </div>
             </div>
-            
-            <div class="space-y-6">
+        </div>
+
+        <!-- ================= ABOUT US (MAELEZO MAREFU) ================= -->
+        <section id="about" class="max-w-7xl mx-auto px-4 py-20">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="rounded-3xl overflow-hidden shadow-2xl relative border-4 border-white dark:border-gray-800">
+                    <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1000&q=80" alt="Selvix Team" class="w-full h-auto object-cover hover:scale-110 transition duration-700">
+                    <div class="absolute bottom-6 right-6 bg-white dark:bg-navy p-6 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700">
+                        <p class="text-4xl font-black text-selvix mb-1">100+</p>
+                        <p class="text-sm font-extrabold text-gray-500 uppercase tracking-widest" data-i18n="stat_projects">Enterprise Projects</p>
+                    </div>
+                </div>
                 <div>
-                    <label class="block text-[10px] font-bold text-cyan-700 uppercase mb-2 tracking-widest text-center">ID Verification</label>
-                    <input type="text" id="voter-id-input" placeholder="SHMSS-2024-001" 
-                           class="cyber-input w-full p-4 font-mono text-center text-lg uppercase tracking-widest outline-none focus:border-cyan-400">
+                    <h4 class="text-selvix font-bold text-sm tracking-widest uppercase mb-3" data-i18n="nav_about">About Us</h4>
+                    <h2 class="text-4xl font-black mb-8" data-i18n="about_title">Pioneering Digital Transformation in Africa</h2>
+                    <div class="text-gray-600 dark:text-gray-300 space-y-5 leading-relaxed text-lg">
+                        <p data-i18n="about_p1">Selvix Digital Solution is a premium software engineering agency dedicated to building robust, scalable, and secure digital infrastructures. We don't just create standard websites; we engineer complex, data-driven ecosystems tailored for ambitious businesses.</p>
+                        <p data-i18n="about_p2">Our expertise spans across developing high-speed React & Vue frontends, cross-platform Flutter mobile applications, and impenetrable Node.js/Python backend architectures. We handle everything from UI/UX design to Cloud Server deployment (AWS & DigitalOcean).</p>
+                        <p data-i18n="about_p3">Whether you need a simple corporate web presence, a robust E-commerce platform, or a core banking ERP system, our dedicated team ensures top-tier quality, 99.9% server uptime, and reliable 24/7 technical support.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PORTFOLIO ================= -->
+        <section id="portfolio" class="bg-gray-100 dark:bg-gray-900 py-24 mt-10 transition-colors">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h4 class="text-selvix font-bold text-sm tracking-widest uppercase mb-3" data-i18n="nav_portfolio">Portfolio</h4>
+                    <h2 class="text-4xl font-black" data-i18n="port_title">Systems We Have Engineered</h2>
+                </div>
+                <div class="grid md:grid-cols-3 gap-10">
+                    <div class="group bg-white dark:bg-navy rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition duration-300 border border-transparent dark:border-gray-800 hover:border-selvix">
+                        <div class="overflow-hidden h-56"><img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-700"></div>
+                        <div class="p-8">
+                            <h3 class="font-bold text-xl mb-2">Fintech ERP Dashboard</h3>
+                            <p class="text-sm text-selvix font-bold mb-4">React.js & Node Backend</p>
+                            <p class="text-gray-500 dark:text-gray-400 leading-relaxed" data-i18n="port_d1">A highly secure portal with real-time analytics, automated reporting, and transaction management.</p>
+                        </div>
+                    </div>
+                    <div class="group bg-white dark:bg-navy rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition duration-300 border border-transparent dark:border-gray-800 hover:border-selvix">
+                        <div class="overflow-hidden h-56"><img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-700"></div>
+                        <div class="p-8">
+                            <h3 class="font-bold text-xl mb-2">Logistics & Delivery App</h3>
+                            <p class="text-sm text-selvix font-bold mb-4">Flutter (iOS & Android)</p>
+                            <p class="text-gray-500 dark:text-gray-400 leading-relaxed" data-i18n="port_d2">Cross-platform mobile application featuring live GPS driver tracking, maps API, and instant payments.</p>
+                        </div>
+                    </div>
+                    <div class="group bg-white dark:bg-navy rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition duration-300 border border-transparent dark:border-gray-800 hover:border-selvix">
+                        <div class="overflow-hidden h-56"><img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-700"></div>
+                        <div class="p-8">
+                            <h3 class="font-bold text-xl mb-2">Modern E-Commerce</h3>
+                            <p class="text-sm text-selvix font-bold mb-4">Vue.js & MongoDB</p>
+                            <p class="text-gray-500 dark:text-gray-400 leading-relaxed" data-i18n="port_d3">Lightning-fast online store with complex inventory algorithms, cart logic, and mobile money integration.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PRICING (VIFURUSHI VYA KINA HADI MILIONI 8) ================= -->
+        <section id="pricing" class="py-24">
+            <div class="max-w-[1400px] mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h4 class="text-selvix font-bold text-sm tracking-widest uppercase mb-3" data-i18n="nav_pricing">Pricing & Packages</h4>
+                    <h2 class="text-4xl font-black mb-4" data-i18n="pack_title">Transparent, Feature-Rich Plans</h2>
+                    <p class="text-gray-500 dark:text-gray-400 text-lg max-w-2xl mx-auto" data-i18n="pack_desc">We provide free hosting and domains for the first year. Change your country in the menu to update currencies.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
                     
-                    <div id="auth-error-msg" class="hidden warning-box mt-4 p-4 text-[12px] font-bold text-center uppercase leading-tight">
+                    <!-- PACKAGE 1: Basic -->
+                    <div class="bg-white dark:bg-navy border border-gray-200 dark:border-gray-800 rounded-[2rem] p-8 hover:shadow-2xl transition duration-300 flex flex-col">
+                        <h3 class="text-gray-500 font-extrabold uppercase tracking-widest mb-4">Web Basic</h3>
+                        <div class="text-3xl font-black mb-2 text-gray-900 dark:text-white price-value" data-base="150000">TZS 150,000</div>
+                        <p class="text-sm text-selvix font-bold mb-6">Malipo ya Mara Moja</p>
+                        <ul class="space-y-4 text-sm text-gray-600 dark:text-gray-300 flex-grow mb-8">
+                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-3"></i> <span>Free <b>.co.tz Domain</b> (1 Year)</span></li>
+                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-3"></i> <span><b>2GB NVMe Hosting</b> (12 Months)</span></li>
+                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-3"></i> <span>3 to 5 Modern HTML Pages</span></li>
+                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-3"></i> <span>5 Professional Email Accounts</span></li>
+                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-3"></i> <span>Free SSL Security</span></li>
+                            <li class="flex items-start opacity-50"><i class="fas fa-times text-gray-400 mt-1 mr-3"></i> <span>No Database / Admin Panel</span></li>
+                        </ul>
+                        <button onclick="openForm()" class="w-full border-2 border-gray-300 dark:border-gray-700 font-bold py-3.5 rounded-xl hover:border-selvix hover:text-selvix transition" data-i18n="btn_select">Select Plan</button>
                     </div>
-                </div>
-                <button onclick="startVoting()" class="btn-cyber w-full py-4 tracking-widest">Verify ID</button>
-            </div>
-        </div>
 
-        <!-- Voting Section -->
-        <div id="voting-section" class="hidden space-y-8">
-            <div class="flex items-center justify-between bg-cyan-950/20 p-4 border-l-4 border-cyan-500">
-                <div class="font-mono text-xs text-cyan-100" id="active-user-display"></div>
-                <div class="text-[10px] text-cyan-400 font-bold uppercase tracking-widest">Encrypted Session</div>
-            </div>
-            
-            <div id="ballot-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
-            
-            <button onclick="submitBallot()" class="btn-cyber w-full py-6 text-xl mt-8 tracking-widest">Finalize Selection</button>
-        </div>
-
-        <!-- Admin Section -->
-        <div id="admin-section" class="hidden space-y-6">
-            <div class="flex justify-between items-center border-b border-cyan-500/30 pb-4">
-                <h2 class="text-2xl font-bold text-white uppercase tracking-tighter">Election Dashboard</h2>
-                <div class="flex gap-2">
-                    <button onclick="clearVotes()" class="btn-cyber px-4 py-2 text-[10px] border-red-600 text-red-500">Reset System</button>
-                    <button onclick="location.reload()" class="btn-cyber px-4 py-2 text-[10px]">Logout</button>
-                </div>
-            </div>
-            <div id="admin-live-counts" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"></div>
-            <div id="admin-breakdown" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-        </div>
-    </main>
-
-    <script>
-        const CONFIG = { 
-            TOTAL_STUDENTS: 500, 
-            YEAR: "2024",
-            ADMIN_KEY: "ayla" 
-        };
-
-        const categories = [
-            { id: 'head', title: 'Head Prefect', candidates: ["FURAHA", "ADHEEN", "LEILA", "ABOUBAKAR"] },
-            { id: 'deputy', title: 'Deputy Prefect', candidates: ["ABRIELLE", "YONA", "RANIA", "TANISH"] },
-            { id: 'secretary', title: 'Secretary Prefect', candidates: ["ARIANNAH", "AHMED", "TWAHIBA", "FAHD"] },
-            { id: 'acad', title: 'Academic Prefect', candidates: ["LINCOLN", "GISHA", "LANTA-LILIAN", "MICHELLE"], dual: true },
-            { id: 'disc', title: 'Discipline Prefect', candidates: ["ABDULKIZA", "ABDULRASUL", "ZAITUNI", "AKLAM"], dual: true },
-            { id: 'sport', title: 'Sports Prefect', candidates: ["THABIT", "PRINCE", "WENDE", "SHAAFA"], dual: true },
-            { id: 'env', title: 'Environmental Prefect', candidates: ["GABRIEL", "YUSUPH", "AMINA", "MOZA"], dual: true },
-            { id: 'anti', title: 'Anti-Bully Prefect', candidates: ["ANMAR", "KHAMIS", "ABIGAIL", "PRECIOUS"], dual: true }
-        ];
-
-        let selections = {};
-        let currentVoterId = "";
-
-        window.onload = () => {
-            document.getElementById('range-hint').innerText = `Valid Range: SHMSS-${CONFIG.YEAR}-001 to ${CONFIG.TOTAL_STUDENTS}`;
-        };
-
-        function showError(msg) {
-            const errorBox = document.getElementById('auth-error-msg');
-            errorBox.innerHTML = msg;
-            errorBox.classList.remove('hidden');
-        }
-
-        function startVoting() {
-            const input = document.getElementById('voter-id-input');
-            const id = input.value.trim().toUpperCase();
-            const errorBox = document.getElementById('auth-error-msg');
-            errorBox.classList.add('hidden');
-            
-            if (id === CONFIG.ADMIN_KEY.toUpperCase()) {
-                openAdmin();
-                return;
-            }
-
-            // REPETITION CHECK (CRITICAL FIX)
-            const alreadyVotedList = JSON.parse(localStorage.getItem('shmss_voted_ids') || '[]');
-            
-            if (alreadyVotedList.includes(id)) {
-                input.value = "";
-                showError("🚨 ACCESS DENIED: ID " + id + " HAS ALREADY BEEN USED.");
-                return;
-            }
-
-            // Format Validation
-            const regex = new RegExp(`^SHMSS-${CONFIG.YEAR}-\\d{3}$`);
-            if (!regex.test(id)) {
-                showError("❌ FORMAT ERROR<br><span class='text-[10px]'>ID MUST BE: SHMSS-2024-###</span>");
-                return;
-            }
-
-            // Range Check
-            const num = parseInt(id.split('-')[2]);
-            if (num < 1 || num > CONFIG.TOTAL_STUDENTS) {
-                showError("❌ UNREGISTERED ID NUMBER");
-                return;
-            }
-
-            currentVoterId = id;
-            document.getElementById('login-section').classList.add('hidden');
-            document.getElementById('voting-section').classList.remove('hidden');
-            document.getElementById('active-user-display').innerText = `SESSION: ${id}`;
-            renderBallot();
-            window.scrollTo(0,0);
-        }
-
-        function renderBallot() {
-            const container = document.getElementById('ballot-container');
-            container.innerHTML = categories.map(cat => {
-                if (!cat.dual) {
-                    return `
-                        <div class="cyber-panel cyber-border p-6">
-                            <h3 class="text-white text-xs font-bold uppercase mb-4 border-b border-cyan-900 pb-2">${cat.title}</h3>
-                            <select onchange="selections['${cat.id}']=this.value" class="cyber-input w-full p-3 text-xs uppercase outline-none focus:border-white">
-                                <option value="">-- CHOOSE CANDIDATE --</option>
-                                ${cat.candidates.map(c => `<option value="${c}">${c}</option>`).join('')}
-                            </select>
-                        </div>
-                    `;
-                } else {
-                    const half = Math.ceil(cat.candidates.length / 2);
-                    const males = cat.candidates.slice(0, half);
-                    const females = cat.candidates.slice(half);
-                    return `
-                        <div class="cyber-panel cyber-border p-6">
-                            <h3 class="text-white text-xs font-bold uppercase mb-4 border-b border-cyan-900 pb-2">${cat.title}</h3>
-                            <div class="space-y-3">
-                                <select onchange="selections['${cat.id}_m']=this.value" class="cyber-input w-full p-2 text-[10px] uppercase outline-none">
-                                    <option value="">-- MALE CANDIDATE --</option>
-                                    ${males.map(c => `<option value="${c}">${c}</option>`).join('')}
-                                </select>
-                                <select onchange="selections['${cat.id}_f']=this.value" class="cyber-input w-full p-2 text-[10px] uppercase outline-none">
-                                    <option value="">-- FEMALE CANDIDATE --</option>
-                                    ${females.map(c => `<option value="${c}">${c}</option>`).join('')}
-                                </select>
-                            </div>
-                        </div>
-                    `;
-                }
-            }).join('');
-        }
-
-        function submitBallot() {
-            const alreadyVotedList = JSON.parse(localStorage.getItem('shmss_voted_ids') || '[]');
-            if (alreadyVotedList.includes(currentVoterId)) {
-                alert("Security breach detected: ID already used.");
-                location.reload();
-                return;
-            }
-
-            const expectedCount = categories.reduce((acc, cat) => acc + (cat.dual ? 2 : 1), 0);
-            if (Object.keys(selections).length < expectedCount) {
-                return alert("ERROR: You must vote for every category.");
-            }
-
-            let votes = JSON.parse(localStorage.getItem('shmss_vote_counts')) || {};
-            Object.values(selections).forEach(name => {
-                votes[name] = (votes[name] || 0) + 1;
-            });
-            localStorage.setItem('shmss_vote_counts', JSON.stringify(votes));
-
-            alreadyVotedList.push(currentVoterId);
-            localStorage.setItem('shmss_voted_ids', JSON.stringify(alreadyVotedList));
-
-            alert("VOTE SUBMITTED. THANK YOU.");
-            location.reload();
-        }
-
-        function openAdmin() {
-            const pass = prompt("ADMIN AUTHORIZATION:");
-            if (pass === CONFIG.ADMIN_KEY) {
-                document.getElementById('login-section').classList.add('hidden');
-                document.getElementById('voting-section').classList.add('hidden');
-                document.getElementById('admin-section').classList.remove('hidden');
-                updateAdminPanel();
-            } else if (pass !== null) {
-                alert("INVALID ACCESS KEY");
-            }
-        }
-
-        function updateAdminPanel() {
-            const votes = JSON.parse(localStorage.getItem('shmss_vote_counts')) || {};
-            const registry = JSON.parse(localStorage.getItem('shmss_voted_ids') || '[]');
-            const turnout = registry.length;
-            
-            document.getElementById('admin-live-counts').innerHTML = `
-                <div class="cyber-panel p-4 border border-cyan-800">
-                    <p class="text-[9px] uppercase font-bold text-cyan-600">Total Votes Cast</p>
-                    <p class="text-2xl font-bold text-white">${turnout}</p>
-                </div>
-                <div class="cyber-panel p-4 border border-cyan-800">
-                    <p class="text-[9px] uppercase font-bold text-cyan-600">Turnout %</p>
-                    <p class="text-2xl font-bold text-white">${((turnout/CONFIG.TOTAL_STUDENTS)*100).toFixed(1)}%</p>
-                </div>
-            `;
-
-            document.getElementById('admin-breakdown').innerHTML = categories.map(cat => {
-                const tallies = cat.candidates.map(c => `
-                    <div class="flex justify-between text-[11px] py-1 border-b border-cyan-900/30">
-                        <span>${c}</span><span class="text-cyan-400 font-bold">${votes[c] || 0}</span>
-                    </div>
-                `).join('');
-                return `<div class="cyber-panel cyber-border p-4">
-                    <h4 class="text-white text-[10px] font-bold uppercase mb-2">${cat.title}</h4>
-                    ${tallies}
-                </div>`;
-            }).join('');
-        }
-
-        function clearVotes() {
-            if(confirm("DANGER: WIPE ALL ELECTION DATA?")) {
-                localStorage.removeItem('shmss_vote_counts');
-                localStorage.removeItem('shmss_voted_ids');
-                location.reload();
-            }
-        }
-
-        setInterval(() => {
-            const el = document.getElementById('system-time');
-            if (el) el.innerText = `SYS_SYNC: ${new Date().toLocaleTimeString()}`;
-        }, 1000);
-    </script>
-</body>
-</html>
+                    <!-- PACKAGE 2: Pro -->
+                    <div class="bg-white dark:bg-navy border-2 border-selvix rounded-[2rem] p-8 hover:shadow-2xl transition duration-300 flex flex-col relative transform xl:-translate-y-6 shadow-xl">
+                        <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-selvix text-white px-6 py-1.5 rounded-full text-xs font-black uppercase tracking-widest">Most Popular</div>
+                        <h3 class="text-selvix font-extrabold uppercase tracking-widest mb-4 mt-2">Web Pro + Backend</h3>
+                        <div class="text-4xl font-black mb-2 text-gray-900 dark:text-white price-value" data-base="450000">TZS 450,000</div>
+                        <p class="text-sm text-gray-500 mb-6">Malipo ya Mara Moja</p>
+                        <ul class="space-y-4 text-sm text-gray-600 dark:text-gray-300 flex-grow mb-8">
+                            <li class="flex items-start"><i class="fas fa-check text-selvix mt-1 mr-3 text-lg"></i> <span>Free <b>.com or .co.tz Domain</b></span></li>
+                            <li class="flex items-start"><i class="fas fa-check text-selvix mt-1 mr-3 text-lg"></i> <span><b>20GB Cloud Hosting</b> (12 Months)</span></li>
+                            <li class="flex items-start"><i class="fas fa-check text-selvix mt-1 mr-3 text-lg"></i> <span>Dynamic React / Vue.js Website</span></li>
+                            <li class="flex items-start"><i class="fas fa-check text-selvix mt-1 mr-3 text-lg"></i> <span>Custom <b>Admin Control Panel</b></span></li>
+                            <li class="flex items-start"><i class="fas fa-check text-selvix mt-1 mr-3 text-lg"></i> <span>MySQL/PostgreSQL Database</span></li>
+                            <li class="flex items-start"><i class="fas fa-check text-selvix mt-1 mr-3 text-lg"></i> <span>Unlimited Business Emails</span></li>
+                        </ul>
+                        <button onclick="openForm()" class="w-full bg-selvix text-white font-extrabold py-3.5 rounded-xl hover:bg-blue-700 transition shadow-lg" data-i18n="btn_select">Select Plan</button>
+          
